@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+      <record id="action_report_print_statement" model="ir.actions.report">
+           <field name="name">Customer Statement</field>
+           <field name="model">customer.account.report.wizard</field>
+           <field name="report_type">qweb-pdf</field>
+           <field name="report_name">account_statement_report.report_statement</field>
+           <field name="report_file">customer account statement</field>
+      </record>
+
+        <report
+            id="hanifa_account_statement_xls"
+            model="customer.account.report.wizard"
+            string="Customer Account Statement"
+            report_type="xlsx"
+            name="account_statement_report.report_statement_xls"
+            file="Account Statement report"/>
+    </data>
+
+
+
+
+</odoo>

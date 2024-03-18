@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+<menuitem id="customer_account_report_root_menu"
+	parent="account.menu_finance_reports"
+            name="Customer Account Statement"
+            action="customer_statement_wizard_action"
+            sequence="30"
+                   />
+</data>
+</odoo>

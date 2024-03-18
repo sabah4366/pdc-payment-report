@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_statement">
+        <t t-call="web.html_container">
+            <!--            <t t-call="web.external_layout_standard">-->
+
+
+            <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout"
+                 t-att-data-oe-model="o and o._name"
+                 t-att-data-oe-id="o and o.id"
+                 t-att-data-oe-lang="o and o.env.context.get('lang')">
+                <div class="pt-5">
+                    <!-- This div ensures that the address is not cropped by the header. -->
+                    <t t-call="web.address_layout"/>
+                </div>
+
+                <div class="page">
+
+
+
+                    <div t-attf-class="o_company_#{company.id}_layout"
+                         t-att-style="report_header_style">
+                        <div class="o_background_header">
+                            <div class="float-right">
+                                <h3 class="mt0 text-right"
+                                    t-field="company.report_header"/>
+                            </div>
+
+                            <div class="clearfix mb8"/>
+
+                            <center>
+                                <img style="max-width:70%;" t-if="company.logo"
+                                     t-att-src="image_data_uri(company.logo)"
+                                     alt="Logo"/>
+                            </center>
+                            <center>
+                                <t t-if="not company.is_hide_address">
+
+                                    <p>Tel:&amp;ensp;<span t-esc="company.phone"/>,
+                                        PO
+                                        Box:&amp;ensp;<span t-esc="company.zip"/>,&amp;ensp;<span t-esc="company.state_id.name"/> - U.A.E.
+                                    </p>
+                                </t>
+                                <t t-if="company.is_hide_address">
+                                    <p></p>
+                                </t>
+                            </center>
+
+                        </div>
+                    </div>
+
+
+                    <div class="col-xs-12">
+                        <center>
+                            <b>
+                                <h4>Account Statement</h4>
+
+
+                            </b>
+                        </center>
+                    </div>
+
+                    <div class="col-xs-4" style="margin-top:20px;">
+                        <b>
+                            <span t-esc="partner_details['name']"></span>
+                        </b>
+                        <p>
+                            <span t-esc="partner_details['street']"></span>
+                            <span t-esc="partner_details['street2']"></span>
+                            <br/>
+                            <span t-esc="partner_details['state']"></span>
+                            <span t-esc="partner_details['country']"></span>
+                            <span t-esc="partner_details['zip']"></span>
+                        </p>
+                    </div>
+                    <div class="col-xs-4" style="margin-top:20px;">
+                        <b>
+                            Contact Details
+                        </b>
+                        <p>
+                            <span t-esc="partner_details['contact2']">,</span>
+                            <span t-esc="partner_details['contact1']"></span>
+                        </p>
+
+                    </div>
+
+                    <div>
+                        <p>Below is the current statement of your account. The
+                            total amount due is <span t-esc="company.currency_id.name"></span>.
+                            <b>
+                                <t t-if="check_entries_ret == 'false'">
+
+                                    <t t-if="company.is_oman_company">
+
+                                        <span t-esc="'{0:,.3f}'.format(grand_total)"/>
+                                    </t>
+                                    <t t-if="not company.is_oman_company">
+                                        <t t-if="grand_total">
+                                            <span t-esc="'{0:,.2f}'.format(grand_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(0)"/>
+                                        </t>
+                                    </t>
+                                </t>
+                                <t t-elif="check_entries_ret == 'true'">
+
+                                <t t-if="company.is_oman_company">
+
+                                    <span t-esc="'{0:,.3f}'.format(entry_total)"/>
+                                </t>
+                                    <t t-if="not company.is_oman_company">
+
+                                    <span t-esc="'{0:,.2f}'.format(entry_total)"/>
+                                </t>
+                                </t>
+                                <t t-elif="check_status == 'false'">
+
+                                <t t-if="company.is_oman_company">
+
+                                    <span t-esc="'{0:,.3f}'.format(get_statement_details['total_amount'])"/>
+
+                                </t>
+
+                                    <t t-if="not company.is_oman_company">
+
+                                    <span t-esc="'{0:,.2f}'.format(get_statement_details['total_amount'])"/>
+
+                                </t>
+
+                                </t>
+
+                            </b>
+                            as on
+                            <b>
+                                <span t-esc="data['end_date']"
+                                      t-options="{'widget': 'date'}"/>
+                            </b>
+                            and
+                            the list of outstanding invoices are listed below.
+                        </p>
+                    </div>
+
+                    <div>
+
+                        <p>In case of any queries or clarifications please feel
+                            free to call us on <b><span t-esc="company.phone"/></b> or email
+                            us
+                            on
+                            <b><span t-esc="company.email"/></b>
+                        </p>
+                    </div>
+
+
+                    <div class="row"
+                         style="padding-left:30px;padding-right:10px;">
+
+                        <table class="table" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th style="font-size:13px; text-transform: capitalize !important;">
+                                        SL No
+                                    </th>
+                                    <th style="min-width:70px;font-size:13px; text-transform: capitalize !important;">
+                                        Invoice Date
+                                    </th>
+                                    <th style="min-width:100px;font-size:13px; text-transform: capitalize !important;">
+                                        Invoice No
+                                    </th>
+                                    <th style="min-width:100px;font-size:13px; text-transform: capitalize !important;">
+                                        LPO No
+                                    </th>
+                                    <th style="min-width:100px;font-size:13px; text-transform: capitalize !important;">
+                                        DO No
+                                    </th>
+                                    <th style="min-width:112px;font-size:13px; text-transform: capitalize !important;">
+                                        Site Name
+                                    </th>
+                                    <th style="min-width:70px;font-size:13px; text-transform: capitalize !important;">
+                                        Due Date
+                                    </th>
+                                    <th style="text-align:right;min-width:100px;font-size:13px; text-transform: capitalize !important;">
+                                        Outstanding Amount
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <t t-if="check_entries_ret == 'true'">
+                                <t t-if="data != 'total_amount'">
+                                    <tr>
+                                        <td style=" text-align:left;font-size:13px;" colspan="8">
+                                            <b>Initial Balance</b>
+                                        </td>
+                                    </tr>
+                                    <tbody>
+                                        <t t-set="sl_no" t-value="1"/>
+                                        <t t-foreach="check_journal_entries"  t-as="journal_entries">
+
+                                            <!--                                               <t t-set="month_tot"-->
+                                            <!--                                                   t-value="month_tot + o['due_amount'] "/>-->
+
+                                            <tr>
+                                                <td style=" font-size:13px;">
+                                                    <span t-esc="journal_entries['sl']"/>
+                                                </td>
+                                                <td style=" font-size:13px;">
+                                                    <span t-esc="journal_entries['entry_date']"/>
+                                                </td>
+                                                <td style=" font-size:13px;">
+                                                    <span t-esc="journal_entries['entry_no']"/>
+                                                </td>
+                                                <td style=" font-size:13px;">
+                                                    <!--                                                        <span t-esc="o['lpo_no']"/>-->
+                                                </td>
+                                                <td style=" font-size:13px;">
+                                                    <!--                                                        <span t-esc="o['do_no']"/>-->
+                                                </td>
+                                                <td style=" font-size:13px;">
+                                                    <!--                                                        <span t-esc="o['site_name']"/>-->
+                                                </td>
+                                                <td style=" font-size:13px;">
+                                                    <!--                                                        <span t-esc="o['due_date']"/>-->
+                                                </td>
+                                                <td style=" font-size:13px; text-align:right;">
+                                                    <t t-if="company.is_oman_company">
+                                                        <span t-esc="'{0:,.3f}'.format(journal_entries['entry_amount'])"/>
+                                                    </t>
+                                                     <t t-if="not company.is_oman_company">
+                                                        <span t-esc="'{0:,.2f}'.format(journal_entries['entry_amount'])"/>
+                                                    </t>
+                                                </td>
+                                            </tr>
+
+
+                                        </t>
+
+                                    </tbody>
+                                </t>
+                            </t>
+
+                            <t t-foreach="get_statement_details"
+                               t-as="data">
+                                <t t-set="month_tot" t-value="0"/>
+
+                                <t t-if="data != 'total_amount'">
+                                    <tr>
+                                        <td style=" text-align:left;font-size:13px;" colspan="8">
+                                            <span t-esc="data"/>
+                                        </td>
+                                    </tr>
+                                    <tbody>
+                                        <t t-foreach="get_statement_details[data]" t-as="o">
+
+                                            <t t-set="month_tot"
+                                               t-value="month_tot + o['due_amount'] "/>
+
+                                                <tr>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['sl']"/>
+                                                    </td>
+
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['invoice_date']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['invoice_no']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['lpo_no']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['do_no']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['site_name']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['due_date']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px; text-align:right;">
+                                                        <t t-if="company.is_oman_company">
+                                                        <span t-esc="'{0:,.3f}'.format(o['due_amount'])"/>
+                                                        </t>
+                                                        <t t-if="not company.is_oman_company">
+                                                        <span t-esc="'{0:,.2f}'.format(o['due_amount'])"/>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                         </t>
+
+
+                                    </tbody>
+                                    <t t-if="'{0:,.2f}'.format(month_tot) != '0.00'">
+                                        <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td style=" text-align:right;font-size:15px;">
+                                            <b>Total:</b>
+                                        </td>
+                                        <td style=" text-align:right;">
+                                            <b>
+                                                <t t-if="company.is_oman_company">
+
+                                                <span t-esc="'{0:,.3f}'.format(month_tot)"/>
+                                                </t>
+                                                <t t-if="not company.is_oman_company">
+
+                                                <span t-esc="'{0:,.2f}'.format(month_tot)"/>
+                                                </t>
+                                            </b>
+                                        </td>
+
+                                    </tr>
+                                    </t>
+                                </t>
+                            </t>
+
+                        </table>
+
+                    </div>
+                    <div class="col-xs-12"
+                         style="text-align:right; margin:30px 0;background-color:#9bc2e6;color:black;">
+                        <b>
+                            <span style="font-size:16px; text-align:right;">
+                                Total : &amp;ensp;&amp;ensp;&amp;ensp;
+                                <t t-if="company.is_oman_company">
+
+                                <span t-esc="'{0:,.3f}'.format(get_statement_details['total_amount'])"/>
+                                </t>
+
+                                 <t t-if="not company.is_oman_company">
+
+                                <span t-esc="'{0:,.2f}'.format(get_statement_details['total_amount'])"/>
+                                </t>
+
+                            </span>
+                        </b>
+                    </div>
+
+                    <div class="row"
+                         style="padding-left:30px;padding-right:10px;page-break-inside:avoid;">
+
+                        <table class="table" style="width:100%;">
+                            <thead>
+
+                            <tr>
+                                        <td style=" color:black;text-align:center;font-size:13px;" colspan="8">
+                                            <b>PDC PAYMENTS</b>
+                                        </td>
+                                    </tr>
+                            </thead>
+                            <thead>
+                                <tr>
+                                    <th style="max-width:60px;font-size:13px; text-transform: capitalize !important;">
+                                        Cheque No
+                                    </th>
+                                    <th style="max-width:60px;font-size:13px; text-transform: capitalize !important;">
+                                        Cheque Date
+                                    </th>
+                                    <th style="max-width:160px;font-size:13px; text-transform: capitalize !important;">
+                                        Invoice No
+                                    </th>
+                                    <th style="text-align:right;font-size:13px; text-transform: capitalize !important;max-width:80px">
+                                        Cheque Amount
+                                    </th>
+
+                                </tr>
+                            </thead>
+
+                                    <tbody>
+                                        <t t-set="pdc_tot" t-value="0"/>
+                                        <t t-foreach="get_pdc_details"  t-as="pdc_data">
+
+                                           <t t-set="pdc_tot"
+                                               t-value="pdc_tot + pdc_data['amount'] "/>
+
+                                            <tr>
+                                                <td style=" font-size:13px;">
+                                                    <span t-esc="pdc_data['reference']"/>
+                                                </td>
+                                                <td style=" font-size:13px;">
+                                                    <span t-esc="pdc_data['date']"/>
+                                                </td>
+                                                <td style=" font-size:13px;max-width:160px;">
+                                                    <span t-esc="pdc_data['invoice_number']"/>
+                                                </td>
+                                                <td style=" font-size:13px; text-align:right;">
+                                                    <t t-if="company.is_oman_company">
+                                                        <span t-esc="'{0:,.3f}'.format(pdc_data['amount'])"/>
+                                                    </t>
+                                                     <t t-if="not company.is_oman_company">
+                                                        <span t-esc="'{0:,.2f}'.format(pdc_data['amount'])"/>
+                                                    </t>
+                                                </td>
+                                            </tr>
+
+
+                                        </t>
+                                        <tr>
+
+                                            <td></td>
+                                            <td></td>
+                                            <td style=" text-align:right;font-size:15px;">
+                                                <b>Total:</b>
+                                            </td>
+                                            <td style=" text-align:right;">
+                                                <b>
+                                                    <t t-if="company.is_oman_company">
+
+                                                    <span t-esc="'{0:,.3f}'.format(pdc_tot)"/>
+                                                    </t>
+
+                                                     <t t-if="not company.is_oman_company">
+
+                                                    <span t-esc="'{0:,.2f}'.format(pdc_tot)"/>
+                                                    </t>
+                                                </b>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                        </table>
+
+                    </div>
+
+
+                    <t t-if="check_status == 'true'">
+
+                        <div class="col-xs-12">
+                            <center>
+                                <b>
+                                    <h4>Purchase for Materials</h4>
+                                </b>
+                            </center>
+                        </div>
+
+
+
+                        <div class="row"
+                             style="padding-left:30px;padding-right:10px;page-break-inside:avoid;">
+
+                            <table class="table" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size:13px; text-transform: capitalize !important;">
+                                            SL No
+                                        </th>
+                                        <th style="min-width:70px;font-size:13px; text-transform: capitalize !important;">
+                                            Invoice Date
+                                        </th>
+                                        <th style="min-width:100px;font-size:13px; text-transform: capitalize !important;">
+                                            Invoice No
+                                        </th>
+                                        <th style="min-width:100px;font-size:13px; text-transform: capitalize !important;">
+                                            LPO No
+                                        </th>
+                                        <th style="min-width:100px;font-size:13px; text-transform: capitalize !important;">
+                                            DO No
+                                        </th>
+                                        <th style="min-width:112px;font-size:13px; text-transform: capitalize !important;">
+                                            Site Name
+                                        </th>
+                                        <th style="min-width:70px;font-size:13px; text-transform: capitalize !important;">
+                                            Due Date
+                                        </th>
+                                        <th style="text-align:right;min-width:100px;font-size:13px; text-transform: capitalize !important;">
+                                            Outstanding Amount
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <t t-foreach="vendor_bills"
+                                   t-as="data">
+                                    <t t-set="month_tot" t-value="0"/>
+
+                                    <t t-if="data != 'total_amount'">
+                                        <tr>
+                                            <td style=" text-align:left;font-size:13px;" colspan="8">
+                                                <span t-esc="data"/>
+                                            </td>
+                                        </tr>
+                                        <tbody>
+                                            <t t-foreach="vendor_bills[data]"
+                                               t-as="o">
+
+                                                <t t-set="month_tot"
+                                                   t-value="month_tot + o['due_amount'] "/>
+
+                                                <tr>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['sl']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['invoice_date']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['invoice_no']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['lpo_no']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['do_no']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['site_name']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px;">
+                                                        <span t-esc="o['due_date']"/>
+                                                    </td>
+                                                    <td style=" font-size:13px; text-align:right;">
+                                                        <t t-if="company.is_oman_company">
+
+                                                        <span t-esc="'{0:,.3f}'.format(o['due_amount'])"/>
+                                                        </t>
+
+                                                         <t t-if="not company.is_oman_company">
+
+                                                        <span t-esc="'{0:,.2f}'.format(o['due_amount'])"/>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+
+
+                                            </t>
+
+                                        </tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style=" text-align:right;font-size:15px;">
+                                                <b>Total:</b>
+                                            </td>
+                                            <td style=" text-align:right;">
+                                                <b>
+                                                    <t t-if="company.is_oman_company">
+
+                                                    <span t-esc="'{0:,.3f}'.format(month_tot)"/>
+                                                    </t>
+
+                                                     <t t-if="not company.is_oman_company">
+
+                                                    <span t-esc="'{0:,.2f}'.format(month_tot)"/>
+                                                    </t>
+                                                </b>
+                                            </td>
+
+                                        </tr>
+                                    </t>
+                                </t>
+
+                            </table>
+
+                        </div>
+
+                        <div class="col-xs-12"
+                             style="text-align:right; margin:30px 0;background-color:#9bc2e6;color:black;">
+                            <b>
+                                <span style="font-size:16px; text-align:right;">
+                                    Total : &amp;ensp;&amp;ensp;&amp;ensp;
+                                    <t t-if="company.is_oman_company">
+
+                                    <span t-esc="'{0:,.3f}'.format(vendor_bills['total_amount'])"/>
+                                    </t>
+
+                                    <t t-if="not company.is_oman_company">
+
+                                    <span t-esc="'{0:,.2f}'.format(vendor_bills['total_amount'])"/>
+                                    </t>
+                                </span>
+                            </b>
+                        </div>
+
+                    </t>
+                    <t t-if="check_entries_ret == 'true'">
+                        <div class="col-xs-12"
+                             style="text-align:right; margin:30px 0;background-color:#fce4d6;color:black;">
+                            <b>
+                                <span style="font-size:16px; text-align:right;">
+                                    Grand
+                                    Total : &amp;ensp;&amp;ensp;&amp;ensp;
+
+                                    <t t-if="company.is_oman_company">
+
+                                    <span t-esc="'{0:,.3f}'.format(entry_total) "/>
+                                    </t>
+
+                                    <t t-if="not company.is_oman_company">
+
+                                    <span t-esc="'{0:,.2f}'.format(entry_total) "/>
+                                    </t>
+                                </span>
+                            </b>
+                        </div>
+                    </t>
+                    <t t-if="check_entries_ret == 'false'">
+                        <div class="col-xs-12"
+                             style="text-align:right; margin:30px 0;background-color:#fce4d6;color:black;">
+                            <b>
+                                <span style="font-size:16px; text-align:right;">
+                                    Grand
+                                    Total : &amp;ensp;&amp;ensp;&amp;ensp;
+                                    <t t-if="company.is_oman_company">
+
+                                    <span t-esc="'{0:,.3f}'.format(grand_total)"/>
+                                    </t>
+
+                                    <t t-if="not company.is_oman_company">
+                                        <t t-if="grand_total">
+                                            <span t-esc="'{0:,.2f}'.format(grand_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(0)"/>
+                                        </t>
+                                    </t>
+                                </span>
+                            </b>
+                        </div>
+                    </t>
+
+
+                </div>
+            </div>
+        </t>
+        <!--    </t>-->
+
+    </template>
+</odoo>
